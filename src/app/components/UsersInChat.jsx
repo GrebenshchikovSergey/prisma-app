@@ -3,7 +3,6 @@ import { useSocketStore } from "../stores/socketStore";
 
 const UsersInChat = () => {
 	const socket = useSocketStore((state) => state.socket);
-	const connectSocket = useSocketStore((state) => state.connectSocket);
 	const [users, setUsers] = useState([]);
 
 	const getInitUsers = (users) => {
@@ -18,17 +17,14 @@ const UsersInChat = () => {
 
 	useEffect(() => {
 		if (socket) {
-			socket.on("initUsers", (data) => {
-				console.log("users", data);
-				setUsers(data);
-			});
-		} else connectSocket();
+			socket.on("initUsers", getInitUsers);
+		}
 
-		// return () => {
-		// 	if (socket) {
-		// 		socket.off("initUsers", getInitUsers);
-		// 	}
-		// };
+		return () => {
+			if (socket) {
+				socket.off("initUsers", getInitUsers);
+			}
+		};
 	}, [socket, users]);
 
 	// useEffect(() => {
